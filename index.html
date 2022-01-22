@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vite + Lit App</title>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script type="module" src="/src/index"></script>
+</head>
+
+<body>
+  <h1>Mon design system</h1>
+  <div style="height: 90vh">
+    <simple-grid v-scope v-effect="fetchData()">
+      <grid-column>
+        <h2 slot="column-header">Select a runtime</h2>
+        <content-filter label="Runtime name or stack"></content-filter>
+        <fluid-grid v-if="variants.length">
+          <hero-card v-for="variant in variants" :heroImage="variant.imgPath">
+            <h3 slot="heading">{{variant.name}}</h3>
+            <div class="deployment">
+              <p>Deployment</p>
+              <ul>
+                <li v-if="variant.deployments.includes('ftp')">FTP</li>
+                <li v-if="variant.deployments.includes('git')">GIT</li>
+              </ul>
+            </div>
+            <simple-button skin="primary">Add to estimate</simple-button>
+          </hero-card>
+        </fluid-grid>
+      </grid-column>
+      <grid-column>
+        <h2 slot="column-header">Variants</h2>
+      </grid-column>
+      <grid-column>
+        <h2 slot="column-header">Variants</h2>
+      </grid-column>
+    </simple-grid>
+  </div>
+
+  <script type="module">
+    import { createApp } from 'https://unpkg.com/petite-vue?module';
+
+    createApp({
+      variants: [],
+
+      async fetchData() {
+        const response = await fetch('https://api.clever-cloud.com/v2/products/instances');
+
+        const data = await response.json();
+
+        this.variants = data
+          .sort((a, b) => {
+            if (a.name > b.name) return 1;
+            if (a.name < b.name) return -1;
+            return 0;
+          })
+          .map((variant) => ({
+            id: variant.variant.id,
+            language: variant.type,
+            imgPath: variant.variant.logo,
+            name: variant.name,
+            deployments: variant.deployments,
+            flavors: variant.flavors
+          }));
+
+        console.log(this.variants[0]);
+      }
+    }).mount();
+  </script>
+</body>
+
+</html>
