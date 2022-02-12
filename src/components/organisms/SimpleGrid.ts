@@ -11,16 +11,15 @@ export class SimpleGrid extends LitElement {
 			
 			.grid {
 				display: grid;
-				grid-template-columns: repeat(var(--nbOfColumns), 1fr);
+				grid-auto-columns: 1fr;
+				grid-auto-flow: column;
 				height: 100%;
 			}
 		`
 	];
 
-	nbOfColumns = this.querySelectorAll('grid-column').length;
-
 	render() {
-		return html`<div class="grid" style="--nbOfColumns: ${this.nbOfColumns}">
+		return html`<div class="grid">
 			<slot></slot>
 		</div>`;
 	}
